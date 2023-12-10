@@ -82,17 +82,7 @@ E.g. in the example the error is `Can not call method`. No additional informatio
 
 Create a class that extends `ConstantErrorFormatter` and pass the error message to the constructor.
 
-```php
-class CallableFromRuleErrorFormatter extends ConstantStringErrorMessageFormatter
-{
-    public function __construct()
-    {
-        parent::__construct('Can not call method');
-    }
-}
-```
-
-The next step is to update the test to tell it to use this formatter.
+Update the test to tell it to use a `ConstantStringErrorMessageFormatter`.
 
 ```php
 class CallableFromRuleTest extends AbstractRuleTestCase 
@@ -102,7 +92,7 @@ class CallableFromRuleTest extends AbstractRuleTestCase
 
     protected function getErrorFormatter(): ErrorMessageFormatter
     {
-        return new CallableFromRuleErrorFormatter();
+        return new ConstantStringErrorMessageFormatter("Can not call method");
     }
 }
 ```
