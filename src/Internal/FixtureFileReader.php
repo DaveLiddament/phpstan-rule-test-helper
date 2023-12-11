@@ -7,7 +7,7 @@ namespace DaveLiddament\PhpstanRuleTestHelper\Internal;
 use DaveLiddament\PhpstanRuleTestHelper\ErrorMessageFormatter;
 
 /**
- * @internal§
+ * @internal
  */
 final class FixtureFileReader
 {
