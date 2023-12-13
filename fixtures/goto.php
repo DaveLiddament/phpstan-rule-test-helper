@@ -1,10 +1,10 @@
 <?php
 
-goto foo; // ERROR goto statement is not allowed
+goto foo; // ERROR foo
 
 foo:
 echo 'foo';
-goto bar; // ERROR goto statement is not allowed
+goto bar; // ERROR bar
 
 bar:
 echo 'bar';

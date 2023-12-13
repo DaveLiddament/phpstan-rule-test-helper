@@ -19,6 +19,6 @@ final class NoGotoPhpstanRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        return ['goto statement is not allowed'];
+        return ['goto statement is not allowed. Label: '.$node->name->toString()];
     }
 }
