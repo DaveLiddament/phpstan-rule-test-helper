@@ -20,6 +20,11 @@ abstract class AbstractRuleTestCase extends RuleTestCase
     {
         $fixtureFileReader = new FixtureFileReader();
         $errorFormatter = $this->getErrorFormatter();
+
+        if (is_string($errorFormatter)) {
+            $errorFormatter = new StringErrorMessageConverter($errorFormatter);
+        }
+
         $expectedErrors = [];
         foreach ($fixtureFiles as $fixture) {
             $expectedErrors = array_merge(
@@ -31,7 +36,7 @@ abstract class AbstractRuleTestCase extends RuleTestCase
         $this->analyse($fixtureFiles, $expectedErrors);
     }
 
-    protected function getErrorFormatter(): ErrorMessageFormatter
+    protected function getErrorFormatter(): ErrorMessageFormatter|string
     {
         return new DefaultErrorMessageFormatter();
     }
