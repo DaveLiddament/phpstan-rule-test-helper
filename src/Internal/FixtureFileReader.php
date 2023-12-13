@@ -14,6 +14,8 @@ final class FixtureFileReader
     private const ERROR_MARKER = '// ERROR';
 
     /**
+     * @throws InvalidFixtureFile
+     *
      * @return list<array{string, int}>
      *
      * @internal
