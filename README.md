@@ -64,15 +64,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-    protected function getRule(): Rule
-    {
-        return new CallableFromRule($this->createReflectionProvider());
-    }
-
-    public function testAllowedCall(): void
-    {
-        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
-    }
+    // `getRule` and `testAllowedCall` methods omitted for brevity
     
     protected function getErrorFormatter(): string
     {
@@ -81,7 +73,9 @@ class CallableFromRuleTest extends AbstractRuleTestCase
 }
 ```
 
-The fixture file is simplified as there is no need to specify the error message. Any lines where an error is expected need to end with `// ERROR`.
+The fixture file is simplified as there is no need to specify the error message. 
+Any lines where an error is expected need to end with `// ERROR`, the expected error message is taken from the `getErrorFormatter` method.
+
 #### Fixture:
 
 ```php 
@@ -101,6 +95,15 @@ class SomeCode
 }
 ```
 
+The expected error messages would be:
+
+- Line 6: `Can not call method`
+- Line 12: `Can not call method`
+
+The benefits of this approach are no duplication of the error message text. 
+Any changes to the error message only need to be made in one place in the test case.
+
+
 ### Adding context to error messages
 
 Good error message require context. The context is added to the fixture file after `// ERROR `. Multiple pieces of context can be added by separating them with the `|` character.
@@ -111,15 +114,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-    protected function getRule(): Rule
-    {
-        return new CallableFromRule($this->createReflectionProvider());
-    }
-
-    public function testAllowedCall(): void
-    {
-        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
-    }
+    // `getRule` and `testAllowedCall` methods omitted for brevity
     
     protected function getErrorFormatter(): string
     {
@@ -128,7 +123,7 @@ class CallableFromRuleTest extends AbstractRuleTestCase
 }
 ```
 
-The fixture file is simplified as there is no need to specify the error message. Any lines where an error is expected need to end with `// ERROR`.
+
 #### Fixture:
 
 ```php 
@@ -157,22 +152,16 @@ The expected error messages would be:
 
 If you need more flexibility in the error message, you can return an object that implements the `ErrorMessageFormatter` [interface](src/ErrorMessageFormatter.php).
 
-In the example below the message changes depending on the number of parts in the error context.
+In the example below the message changes depending on the number of parts in the error context. 
+
+NOTE: This is a contrived example, but it shows how you can use `ErrorMessageFormatter` to create more flexible error messages.
 
 ```php
 use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-protected function getRule(): Rule
-{
-return new CallableFromRule($this->createReflectionProvider());
-}
-
-    public function testAllowedCall(): void
-    {
-        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
-    }
+    // `getRule` and `testAllowedCall` methods omitted for brevity
     
     protected function getErrorFormatter(): ErrorMessageFormatter
     {
