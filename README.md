@@ -64,7 +64,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-    // `getRule` and `testAllowedCall` methods omitted for brevity
+    // `getRule` and `testAllowedCall` methods are as above and are omitted for brevity
     
     protected function getErrorFormatter(): string
     {
@@ -114,7 +114,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-    // `getRule` and `testAllowedCall` methods omitted for brevity
+    // `getRule` and `testAllowedCall` methods are as above and are omitted for brevity
     
     protected function getErrorFormatter(): string
     {
@@ -161,7 +161,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
-    // `getRule` and `testAllowedCall` methods omitted for brevity
+    // `getRule` and `testAllowedCall` methods omitted are as above and are for brevity
     
     protected function getErrorFormatter(): ErrorMessageFormatter
     {
