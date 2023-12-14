@@ -1,22 +1,23 @@
 # PHPStan rule testing helper
 
-This is a helper library for slight improvement to DX for testing PHPStan rules.
-It allows you to write the expected error message in the fixture file. 
-Anything after `// ERROR ` is considered the expected error message.
-The test classes are simplified as you now specify just the fixture files, and this library will extract the expected error and calculate the correct line number.
+This library offers a couple of improvements to  PHPStan's [custom rule test harness](https://phpstan.org/developing-extensions/testing#custom-rules).
 
-You can also use an `ErrorMessageFormatter` to further decouple tests from the actual error message. 
-See [ErrorMessageFormatter](#error-formatter) section.
+This library provides [AbstractRuleTestCase](src/AbstractRuleTestCase.php), which extends PHPStan's `RuleTestCase`.
 
-## Example
+It offers a simpler way to write tests for custom rules, specifically:
 
-Test code extends [AbstractRuleTestCase](src/AbstractRuleTestCase.php). 
-As with the PHPStan's `RuleTestCase` use the `getRule` method to setup the rule used by the test.
-For each test list the fixture file(s) needed by the test, using the `assertIssuesReported` method.
+1. No need to specify line numbers in the test code.
+2. You can specify the expected error message once.
+
+## Improvement 1: No more line numbers in tests
+
+The minimal test case specifies the Rule being tested and at least one test.
+Each test must call the `assertIssuesReported` method, which takes the path of one or more fixture files.
+.
 
 #### Test code:
 ```php
-use DaveLiddament\PhpstanRuleTestingHelper\AbstractRuleTestCase;
+use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
 class CallableFromRuleTest extends AbstractRuleTestCase
 {
@@ -46,64 +47,44 @@ class SomeCode
 }
 ```
 
-Every line that contains `// ERROR ` is considered an issue that should be picked up by the rule. 
+Every line that contains `// ERROR ` is considered an issue that should be picked up by the rule.
 The text after `// ERROR` is the expected error message.
 
-With this approach you don't need to work out the line number of the error.
-There are further benefits by using the [ErrorMessageFormatter](#error-formatter) to decouple the error messages from the test code.
+With this approach you don't need to work out the line number of the error. 
+This is particularly handy when you update the Fixture file, you no longer have to update all the line numbers in the test.
 
 
+# Improvement 2: Specify the expected error message once
 
-NOTE: You can pass in multiple fixture files. E.g.
+Often you end up writing the same error message for every violation. To get round this use the `getErrorFromatter` method to specify the error message.
+
+#### Test code:
 ```php
-$this->assertIssuesReported(
-    __DIR__ . '/Fixtures/SomeCode.php', 
-    __DIR__ . '/Fixtures/SomeCode2.php',
-    // And so on...    
- );
-```
+use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 
-
-## Installation
-
-```shell
-composer require --dev dave-liddament/phpstan-rule-test-helper
-```
-
-## Error Formatter
-
-The chances are when you developing PHPStan rules the error message for violations will change. 
-Making any change will require you to update all the related tests.
-
-### Constant string error messages
-
-In the simplest case the error is a message that does provide any context, other than line number. 
-E.g. in the example the error is `Can not call method`. No additional information (e.g. who was trying to call the method) is provided.
-
-Create a class that extends `ConstantErrorFormatter` and pass the error message to the constructor.
-
-Update the test to tell it to use a `ConstantStringErrorMessageFormatter`.
-
-```php
-class CallableFromRuleTest extends AbstractRuleTestCase 
+class CallableFromRuleTest extends AbstractRuleTestCase
 {
-   // getRule method omitted for brevity
-   // testAllowedCall method omitted for brevity
-
-    protected function getErrorFormatter(): ErrorMessageFormatter
+    protected function getRule(): Rule
     {
-        return new ConstantStringErrorMessageFormatter("Can not call method");
+        return new CallableFromRule($this->createReflectionProvider());
+    }
+
+    public function testAllowedCall(): void
+    {
+        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
+    }
+    
+    protected function getErrorFormatter(): string
+    {
+        return "Can not call method";
     }
 }
 ```
 
-Now if the error message is changed, the text only needs to be updated in one place.
+The fixture file is simplified as there is no need to specify the error message. Any lines where an error is expected need to end with `// ERROR`.
+#### Fixture:
 
-Finally, the fixture can be simplified.
-There is no need to specify the error message in the fixture file, we just need to specify where the error is.
-
-Updated fixture:
-```php
+```php 
 class SomeCode
 {
     public function go(): void
@@ -111,54 +92,106 @@ class SomeCode
         $item = new Item("hello");
         $item->updateName("world");  // ERROR
     }
+    
+    public function go2(): void
+    {
+        $item = new Item("hello");
+        $item->remove();  // ERROR
+    }
 }
 ```
 
-### Error messages with context
+### Adding context to error messages
 
-Good error message will provide context. 
-For example, the error message could be improved to give the name of the calling class. 
-The calling class is `SomeClass` so let's update the error message to `Can not call method from SomeCode`.
+Good error message require context. The context is added to the fixture file after `// ERROR `. Multiple pieces of context can be added by separating them with the `|` character.
 
-The fixture is updated to include the calling class name after `// ERROR`
-
+#### Test code:
 ```php
+use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
+
+class CallableFromRuleTest extends AbstractRuleTestCase
+{
+    protected function getRule(): Rule
+    {
+        return new CallableFromRule($this->createReflectionProvider());
+    }
+
+    public function testAllowedCall(): void
+    {
+        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
+    }
+    
+    protected function getErrorFormatter(): string
+    {
+        return "Can not call {0} from within class {1}";
+    }
+}
+```
+
+The fixture file is simplified as there is no need to specify the error message. Any lines where an error is expected need to end with `// ERROR`.
+#### Fixture:
+
+```php 
 class SomeCode
 {
     public function go(): void
     {
         $item = new Item("hello");
-        $item->updateName("world");  // ERROR SomeCode
+        $item->updateName("world");  // ERROR Item::updateName|SomeCode
     }
-}
-```
-
-The `CallableFromRuleErrorFormatter` is updated. 
-Firstly it now extends `ErrorMessageFormatter` instead of `ConstantErrorFormatter`.
-An implementation of `getErrorMessage` is added. 
-This is passed everything after `\\ ERROR`, with whitespace trimmed from each side, and must return the expected error message.
-
-```php
-class CallableFromRuleErrorFormatter extends ErrorMessageFormatter
-{
-    public function getErrorMessage(string $errorContext): string
+    
+    public function go2(): void
     {
-        return 'Can not call method from ' . $errorContext;
+        $item = new Item("hello");
+        $item->remove();  // ERROR Item::remove|SomeCode
     }
 }
 ```
 
-### Error message helper methods
+The expected error messages would be:
 
-Sometimes the contextual error messages might have 2 or more pieces of information. 
-Continuing the example above, the error message could be improved to give the name of the calling class and the method being called.
-E.g. `Can not call Item::updateName from SomeCode`.
+- Line 6: `Can not call Item::updateName from within class SomeCode`
+- Line 11: `Can not call Item::remove from within class SomeCode`
 
-The fixture is updated to include both `Item::updateName` and `SomeCode` seperated by the `|` character. 
+### More flexible error messages
 
-E.g. `// ERROR`
+If you need more flexibility in the error message, you can return an object that implements the `ErrorMessageFormatter` [interface](src/ErrorMessageFormatter.php).
+
+In the example below the message changes depending on the number of parts in the error context.
 
 ```php
+use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
+
+class CallableFromRuleTest extends AbstractRuleTestCase
+{
+protected function getRule(): Rule
+{
+return new CallableFromRule($this->createReflectionProvider());
+}
+
+    public function testAllowedCall(): void
+    {
+        $this->assertIssuesReported(__DIR__ . '/Fixtures/SomeCode.php');
+    }
+    
+    protected function getErrorFormatter(): ErrorMessageFormatter
+    {
+        new class() extends ErrorMessageFormatter {
+            public function getErrorMessage(string $errorContext): string
+            {
+                $parts = $this->getErrorMessageAsParts($errorContext);
+                $calledFrom = count($parts) === 2 ?  'class '.$parts[1] : 'outside an object';
+                
+                return sprintf('Can not call %s from %s', $parts[0], $calledFrom);
+            }
+        };
+   }
+}
+```
+
+#### Fixture:
+
+```php 
 class SomeCode
 {
     public function go(): void
@@ -167,33 +200,14 @@ class SomeCode
         $item->updateName("world");  // ERROR Item::updateName|SomeCode
     }
 }
+    
+$item = new Item("hello");
+$item->remove();  // ERROR Item::remove
 ```
 
-Use the `getErrorMessageAsParts` helper method to do this, as shown below:
 
-```php
+## Installation
 
-class CallableFromRuleErrorFormatter extends ErrorMessageFormatter
-{
-    public function getErrorMessage(string $errorContext): string
-    {
-        $parts = $this->getErrorMessageAsParts($errorContext, 2);
-        return sprintf('Can not call %s from %s', $parts[0], $parts[1]);
-    }
-}
+```shell
+composer require --dev dave-liddament/phpstan-rule-test-helper
 ```
-
-The signature of `getErrorMessageAsParts` is:
-
-```php
-/**
- * @return list<string>
- */
-protected function getErrorMessageAsParts(
-    string $errorContext, 
-    int $expectedNumberOfParts,
-    string $separator = '|', 
-): array
-```
-
-If you use the `getErrorMessageAsParts` and the number of parts is not as expected, the test will error with a message that tells you file and line number of the invalid error.

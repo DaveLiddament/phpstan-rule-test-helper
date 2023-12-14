@@ -8,11 +8,20 @@ use DaveLiddament\PhpstanRuleTestHelper\Internal\ErrorMessageParseException;
 
 abstract class ErrorMessageFormatter
 {
-    /** @throws ErrorMessageParseException */
+    /**
+     * This method returns the error message for an error in a fixture file.
+     *
+     * `$errorContext` is everything after `\\ERROR` in the fixture file
+     *
+     * @throws ErrorMessageParseException
+     */
     abstract public function getErrorMessage(string $errorContext): string;
 
     /**
+     * Helper method for splitting the error context into parts.
+     *
      * @param non-empty-string $separator
+     * @param int|null $expectedNumberOfParts if this is specified, then the number of parts of context must match this number
      *
      * @throws ErrorMessageParseException
      *
