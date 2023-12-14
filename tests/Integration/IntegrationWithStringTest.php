@@ -8,7 +8,7 @@ use DaveLiddament\PhpstanRuleTestHelper\AbstractRuleTestCase;
 use PHPStan\Rules\Rule;
 
 /** @extends AbstractRuleTestCase<NoGotoPhpstanRule> */
-class IntegrationTest extends AbstractRuleTestCase
+class IntegrationWithStringTest extends AbstractRuleTestCase
 {
     public function testRule(): void
     {
@@ -18,5 +18,10 @@ class IntegrationTest extends AbstractRuleTestCase
     protected function getRule(): Rule
     {
         return new NoGotoPhpstanRule();
+    }
+
+    protected function getErrorFormatter(): string
+    {
+        return 'goto statement is not allowed. Label: {0}';
     }
 }
