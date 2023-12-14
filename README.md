@@ -4,7 +4,7 @@ This library offers a couple of improvements to  PHPStan's [custom rule test har
 
 This library provides [AbstractRuleTestCase](src/AbstractRuleTestCase.php), which extends PHPStan's `RuleTestCase`.
 
-It offers a simpler way to write tests for custom rules, specifically:
+It offers a simpler way to write tests for custom rules. Specifically:
 
 1. No need to specify line numbers in the test code.
 2. You can specify the expected error message once.
@@ -13,7 +13,7 @@ It offers a simpler way to write tests for custom rules, specifically:
 
 The minimal test case specifies the Rule being tested and at least one test.
 Each test must call the `assertIssuesReported` method, which takes the path of one or more fixture files.
-.
+
 
 #### Test code:
 ```php
@@ -204,6 +204,12 @@ class SomeCode
 $item = new Item("hello");
 $item->remove();  // ERROR Item::remove
 ```
+
+The expected error messages would be:
+
+- Line 6: `Can not call Item::updateName from class SomeCode`
+- Line 11: `Can not call Item::remove from outside an object`
+
 
 
 ## Installation
