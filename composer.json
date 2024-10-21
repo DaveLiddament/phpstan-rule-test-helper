@@ -3,7 +3,7 @@
   "description": "Library to help make testing of PHPStan rules easier",
   "type": "library",
   "require": {
-    "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
+    "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
     "phpstan/phpstan": "^1.6"
   },
   "require-dev": {
