@@ -1,5 +1,13 @@
 # PHPStan rule testing helper
 
+[![PHP versions: 8.0|8.1|8.2|8.3](https://img.shields.io/badge/php-8.0|8.1|8.2|8.3-blue.svg)](https://packagist.org/packages/dave-liddament/phpstan-rule-test-helper)
+[![Latest Stable Version](https://poser.pugx.org/dave-liddament/phpstan-rule-test-helper/v/stable)](https://packagist.org/packages/dave-liddament/phpstan-rule-test-helper)
+[![License](https://poser.pugx.org/dave-liddament/phpstan-rule-test-helper/license)](https://github.com/DaveLiddament/phpstan-rule-test-helper/blob/master/LICENSE.md)
+[![Total Downloads](https://poser.pugx.org/dave-liddament/phpstan-rule-test-helper/downloads)](https://packagist.org/packages/dave-liddament/phpstan-rule-test-helper/stats)
+
+[![Continuous Integration](https://github.com/DaveLiddament/phpstan-rule-test-helper/workflows/Full%20checks/badge.svg)](https://github.com/DaveLiddament/phpstan-rule-test-helper/actions)
+[![PHPStan level max](https://img.shields.io/badge/PHPStan-max%20level-brightgreen.svg)](https://github.com/DaveLiddament/phpstan-rule-test-helper/blob/master/phpstan.neon)
+
 This library offers a couple of improvements to  PHPStan's [custom rule test harness](https://phpstan.org/developing-extensions/testing#custom-rules).
 
 This library provides [AbstractRuleTestCase](src/AbstractRuleTestCase.php), which extends PHPStan's `RuleTestCase`.
