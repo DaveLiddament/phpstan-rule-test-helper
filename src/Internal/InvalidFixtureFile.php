@@ -17,7 +17,7 @@ final class InvalidFixtureFile extends \Exception
     public static function parseError(
         string $fixtureFileContents,
         int $lineNumber,
-        ErrorMessageParseException $e
+        ErrorMessageParseException $e,
     ): self {
         return new self(
             sprintf(

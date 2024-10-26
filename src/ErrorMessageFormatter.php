@@ -29,7 +29,7 @@ abstract class ErrorMessageFormatter
      */
     final protected function getErrorMessageAsParts(
         string $errorContext,
-        int $expectedNumberOfParts = null,
+        ?int $expectedNumberOfParts = null,
         string $separator = '|',
     ): array {
         $parts = explode($separator, $errorContext);

@@ -54,7 +54,7 @@ final class ErrorMessageFormatterTest extends TestCase
         ErrorMessageFormatter $errorFormatter,
         string $input,
         int $expectedNumberOfParts,
-        int $actualNumberOfParts
+        int $actualNumberOfParts,
     ): void {
         $this->expectException(ErrorMessageParseException::class);
         $this->expectExceptionMessage(
