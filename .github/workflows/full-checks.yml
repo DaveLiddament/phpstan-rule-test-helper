@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 10 * * *'
   pull_request:
-  push:
-    branches:
-      - main
 
 jobs:
   full-checks:
