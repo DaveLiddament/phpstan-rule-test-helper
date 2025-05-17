@@ -173,7 +173,7 @@ class CallableFromRuleTest extends AbstractRuleTestCase
     
     protected function getErrorFormatter(): ErrorMessageFormatter
     {
-        new class() extends ErrorMessageFormatter {
+        retrun new class() extends ErrorMessageFormatter {
             public function getErrorMessage(string $errorContext): string
             {
                 $parts = $this->getErrorMessageAsParts($errorContext);
